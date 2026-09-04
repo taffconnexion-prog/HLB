@@ -1,0 +1,132 @@
+┌──(frejcrack㉿Kali)-[~]
+└─$ ping -c 3 172.28.20.2
+PING 172.28.20.2 (172.28.20.2) 56(84) bytes of data.
+64 bytes from 172.28.20.2: icmp_seq=1 ttl=63 time=298 ms
+64 bytes from 172.28.20.2: icmp_seq=2 ttl=63 time=218 ms
+64 bytes from 172.28.20.2: icmp_seq=3 ttl=63 time=241 ms
+
+--- 172.28.20.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 217.704/252.314/297.760/33.568 ms
+                                                                                                                                                                                                   
+┌──(frejcrack㉿Kali)-[~]
+└─$ # 1. Scan des deux ports annoncés + version
+sudo nmap -sV -sC -Pn -p 2222,8080 172.28.20.2
+
+# 2. Banner SSH (le serveur raconte parfois des choses)
+nc -nv 172.28.20.2 2222
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-09-05 01:29 CEST
+Nmap scan report for 172.28.20.2
+Host is up (0.17s latency).
+
+PORT     STATE SERVICE    VERSION
+2222/tcp open  ssh        OpenSSH 9.2p1 Debian 2+deb12u10 (protocol 2.0)
+| ssh-hostkey: 
+|   256 47:2c:0f:6f:b3:3c:db:f0:16:23:65:10:fb:8e:f2:55 (ECDSA)
+|_  256 16:35:d1:89:89:4f:2b:37:75:b5:aa:11:3c:65:0d:c3 (ED25519)
+8080/tcp open  http-proxy Werkzeug/3.1.8 Python/3.12.14
+|_http-title: Site doesn't have a title (application/json).
+| fingerprint-strings: 
+|   FourOhFourRequest: 
+|     HTTP/1.1 404 NOT FOUND
+|     Server: Werkzeug/3.1.8 Python/3.12.14
+|     Date: Fri, 04 Sep 2026 23:30:03 GMT
+|     Content-Type: text/html; charset=utf-8
+|     Content-Length: 207
+|     Connection: close
+|     <!doctype html>
+|     <html lang=en>
+|     <title>404 Not Found</title>
+|     <h1>Not Found</h1>
+|     <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
+|   GetRequest: 
+|     HTTP/1.1 200 OK
+|     Server: Werkzeug/3.1.8 Python/3.12.14
+|     Date: Fri, 04 Sep 2026 23:30:02 GMT
+|     Content-Type: application/json
+|     Content-Length: 53
+|     Connection: close
+|     {"status":"awaiting","protocol":"spectre-relay/2.1"}
+|   HTTPOptions: 
+|     HTTP/1.1 200 OK
+|     Server: Werkzeug/3.1.8 Python/3.12.14
+|     Date: Fri, 04 Sep 2026 23:30:02 GMT
+|     Content-Type: text/html; charset=utf-8
+|     Allow: HEAD, OPTIONS, GET
+|     Content-Length: 0
+|     Connection: close
+|   RTSPRequest: 
+|     <!DOCTYPE HTML>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>Error response</title>
+|     </head>
+|     <body>
+|     <h1>Error response</h1>
+|     <p>Error code: 400</p>
+|     <p>Message: Bad request version ('RTSP/1.0').</p>
+|     <p>Error code explanation: 400 - Bad request syntax or unsupported method.</p>
+|     </body>
+|     </html>
+|   Socks5: 
+|     <!DOCTYPE HTML>
+|     <html lang="en">
+|     <head>
+|     <meta charset="utf-8">
+|     <title>Error response</title>
+|     </head>
+|     <body>
+|     <h1>Error response</h1>
+|     <p>Error code: 400</p>
+|     <p>Message: Bad request syntax ('
+|     ').</p>
+|     <p>Error code explanation: 400 - Bad request syntax or unsupported method.</p>
+|     </body>
+|_    </html>
+|_http-server-header: Werkzeug/3.1.8 Python/3.12.14
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8080-TCP:V=7.94SVN%I=7%D=9/5%Time=6A9B547A%P=x86_64-pc-linux-gnu%r(
+SF:GetRequest,DB,"HTTP/1\.1\x20200\x20OK\r\nServer:\x20Werkzeug/3\.1\.8\x2
+SF:0Python/3\.12\.14\r\nDate:\x20Fri,\x2004\x20Sep\x202026\x2023:30:02\x20
+SF:GMT\r\nContent-Type:\x20application/json\r\nContent-Length:\x2053\r\nCo
+SF:nnection:\x20close\r\n\r\n{\"status\":\"awaiting\",\"protocol\":\"spect
+SF:re-relay/2\.1\"}\n")%r(HTTPOptions,C8,"HTTP/1\.1\x20200\x20OK\r\nServer
+SF::\x20Werkzeug/3\.1\.8\x20Python/3\.12\.14\r\nDate:\x20Fri,\x2004\x20Sep
+SF:\x202026\x2023:30:02\x20GMT\r\nContent-Type:\x20text/html;\x20charset=u
+SF:tf-8\r\nAllow:\x20HEAD,\x20OPTIONS,\x20GET\r\nContent-Length:\x200\r\nC
+SF:onnection:\x20close\r\n\r\n")%r(RTSPRequest,16C,"<!DOCTYPE\x20HTML>\n<h
+SF:tml\x20lang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x
+SF:20\x20<meta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<tit
+SF:le>Error\x20response</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20
+SF:<body>\n\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x2
+SF:0\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code:\x20400</p>\n\x20\x20\x20
+SF:\x20\x20\x20\x20\x20<p>Message:\x20Bad\x20request\x20version\x20\('RTSP
+SF:/1\.0'\)\.</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20exp
+SF:lanation:\x20400\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\
+SF:x20method\.</p>\n\x20\x20\x20\x20</body>\n</html>\n")%r(FourOhFourReque
+SF:st,185,"HTTP/1\.1\x20404\x20NOT\x20FOUND\r\nServer:\x20Werkzeug/3\.1\.8
+SF:\x20Python/3\.12\.14\r\nDate:\x20Fri,\x2004\x20Sep\x202026\x2023:30:03\
+SF:x20GMT\r\nContent-Type:\x20text/html;\x20charset=utf-8\r\nContent-Lengt
+SF:h:\x20207\r\nConnection:\x20close\r\n\r\n<!doctype\x20html>\n<html\x20l
+SF:ang=en>\n<title>404\x20Not\x20Found</title>\n<h1>Not\x20Found</h1>\n<p>
+SF:The\x20requested\x20URL\x20was\x20not\x20found\x20on\x20the\x20server\.
+SF:\x20If\x20you\x20entered\x20the\x20URL\x20manually\x20please\x20check\x
+SF:20your\x20spelling\x20and\x20try\x20again\.</p>\n")%r(Socks5,18B,"<!DOC
+SF:TYPE\x20HTML>\n<html\x20lang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\
+SF:x20\x20\x20\x20\x20\x20<meta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x2
+SF:0\x20\x20\x20<title>Error\x20response</title>\n\x20\x20\x20\x20</head>\
+SF:n\x20\x20\x20\x20<body>\n\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20r
+SF:esponse</h1>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code:\x20400<
+SF:/p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Message:\x20Bad\x20request\x20s
+SF:yntax\x20\('\\x05\\x04\\x00\\x01\\x02\\x80\\x05\\x01\\x00\\x03'\)\.</p>
+SF:\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20explanation:\x204
+SF:00\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\x20method\.</p
+SF:>\n\x20\x20\x20\x20</body>\n</html>\n");
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 108.00 seconds
+(UNKNOWN) [172.28.20.2] 2222 (?) open
+SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10
+
