@@ -1,132 +1,771 @@
-┌──(frejcrack㉿Kali)-[~]
-└─$ ping -c 3 172.28.20.2
-PING 172.28.20.2 (172.28.20.2) 56(84) bytes of data.
-64 bytes from 172.28.20.2: icmp_seq=1 ttl=63 time=298 ms
-64 bytes from 172.28.20.2: icmp_seq=2 ttl=63 time=218 ms
-64 bytes from 172.28.20.2: icmp_seq=3 ttl=63 time=241 ms
+ollector@loot:~$ ps aux; echo ===; ls -la /opt/; echo ===; find /opt -maxdepth 3 -type f 2>/dev/null | head -30; echo ===; cat /proc/1/environ 2>/dev/null | tr '\0' '\n' | grep -iE 'flag|token|secret|key'
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   4556  2924 ?        Ss   09:57   0:00 su -s /bin/bash collector -c cd /opt/loot-app && python3 server.py
+root           9  0.0  0.0  15460  4912 ?        Ss   09:57   0:00 sshd: /usr/sbin/sshd [listener] 0 of 10-100 startups
+root          10  0.0  0.0   4360  1716 ?        S    09:57   0:00 /bin/bash /usr/local/sbin/entrypoint.sh
+collect+      16  0.0  0.0 114196 34668 ?        Ss   09:57   0:00 python3 server.py
+root          45  0.0  0.0  15920 10008 ?        Ss   10:06   0:00 sshd: collector [priv]
+collect+      51  0.0  0.0  16180  6584 ?        S    10:06   0:00 sshd: collector@pts/0
+collect+      52  0.0  0.0   4624  3804 pts/0    Ss   10:06   0:00 -/bin/bash
+root          71  0.0  0.0   2920  1788 ?        S    10:09   0:00 sleep 60
+collect+      72  0.0  0.0   8496  4632 pts/0    R+   10:10   0:00 ps aux
+===
+total 16
+drwxr-xr-x 1 root root 4096 Sep  4 22:20 .
+drwxr-xr-x 1 root root 4096 Sep  5 09:57 ..
+drwxr-xr-x 1 root root 4096 Sep  4 22:19 loot-app
+drwxr-xr-x 1 root root 4096 Sep  4 22:20 loot-processor
+===
+/opt/loot-processor/indexer.py
+/opt/loot-processor/.mcp.json
+/opt/loot-processor/processor.py
+/opt/loot-app/server.py
+/opt/loot-app/requirements.txt
+===
+collector@loot:~$ cat /usr/local/sbin/entrypoint.sh; echo ===; cat /opt/loot-app/server.py; echo ===; cat /opt/loot-processor/processor.py; echo ===; cat /opt/loot-processor/indexer.py; echo ===; cat /opt/loot-processor/.mcp.json; echo ===; cat /opt/loot-app/requirements.txt
+#!/bin/bash
+set -e
 
---- 172.28.20.2 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 217.704/252.314/297.760/33.568 ms
-                                                                                                                                                                                                   
-┌──(frejcrack㉿Kali)-[~]
-└─$ # 1. Scan des deux ports annoncés + version
-sudo nmap -sV -sC -Pn -p 2222,8080 172.28.20.2
+mkdir -p /run/sshd
+/usr/sbin/sshd
 
-# 2. Banner SSH (le serveur raconte parfois des choses)
-nc -nv 172.28.20.2 2222
-Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-09-05 01:29 CEST
-Nmap scan report for 172.28.20.2
-Host is up (0.17s latency).
+(while true; do sleep 60; /usr/local/bin/python3 /opt/loot-processor/processor.py; done) &
 
-PORT     STATE SERVICE    VERSION
-2222/tcp open  ssh        OpenSSH 9.2p1 Debian 2+deb12u10 (protocol 2.0)
-| ssh-hostkey: 
-|   256 47:2c:0f:6f:b3:3c:db:f0:16:23:65:10:fb:8e:f2:55 (ECDSA)
-|_  256 16:35:d1:89:89:4f:2b:37:75:b5:aa:11:3c:65:0d:c3 (ED25519)
-8080/tcp open  http-proxy Werkzeug/3.1.8 Python/3.12.14
-|_http-title: Site doesn't have a title (application/json).
-| fingerprint-strings: 
-|   FourOhFourRequest: 
-|     HTTP/1.1 404 NOT FOUND
-|     Server: Werkzeug/3.1.8 Python/3.12.14
-|     Date: Fri, 04 Sep 2026 23:30:03 GMT
-|     Content-Type: text/html; charset=utf-8
-|     Content-Length: 207
-|     Connection: close
-|     <!doctype html>
-|     <html lang=en>
-|     <title>404 Not Found</title>
-|     <h1>Not Found</h1>
-|     <p>The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.</p>
-|   GetRequest: 
-|     HTTP/1.1 200 OK
-|     Server: Werkzeug/3.1.8 Python/3.12.14
-|     Date: Fri, 04 Sep 2026 23:30:02 GMT
-|     Content-Type: application/json
-|     Content-Length: 53
-|     Connection: close
-|     {"status":"awaiting","protocol":"spectre-relay/2.1"}
-|   HTTPOptions: 
-|     HTTP/1.1 200 OK
-|     Server: Werkzeug/3.1.8 Python/3.12.14
-|     Date: Fri, 04 Sep 2026 23:30:02 GMT
-|     Content-Type: text/html; charset=utf-8
-|     Allow: HEAD, OPTIONS, GET
-|     Content-Length: 0
-|     Connection: close
-|   RTSPRequest: 
-|     <!DOCTYPE HTML>
-|     <html lang="en">
-|     <head>
-|     <meta charset="utf-8">
-|     <title>Error response</title>
-|     </head>
-|     <body>
-|     <h1>Error response</h1>
-|     <p>Error code: 400</p>
-|     <p>Message: Bad request version ('RTSP/1.0').</p>
-|     <p>Error code explanation: 400 - Bad request syntax or unsupported method.</p>
-|     </body>
-|     </html>
-|   Socks5: 
-|     <!DOCTYPE HTML>
-|     <html lang="en">
-|     <head>
-|     <meta charset="utf-8">
-|     <title>Error response</title>
-|     </head>
-|     <body>
-|     <h1>Error response</h1>
-|     <p>Error code: 400</p>
-|     <p>Message: Bad request syntax ('
-|     ').</p>
-|     <p>Error code explanation: 400 - Bad request syntax or unsupported method.</p>
-|     </body>
-|_    </html>
-|_http-server-header: Werkzeug/3.1.8 Python/3.12.14
-1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
-SF-Port8080-TCP:V=7.94SVN%I=7%D=9/5%Time=6A9B547A%P=x86_64-pc-linux-gnu%r(
-SF:GetRequest,DB,"HTTP/1\.1\x20200\x20OK\r\nServer:\x20Werkzeug/3\.1\.8\x2
-SF:0Python/3\.12\.14\r\nDate:\x20Fri,\x2004\x20Sep\x202026\x2023:30:02\x20
-SF:GMT\r\nContent-Type:\x20application/json\r\nContent-Length:\x2053\r\nCo
-SF:nnection:\x20close\r\n\r\n{\"status\":\"awaiting\",\"protocol\":\"spect
-SF:re-relay/2\.1\"}\n")%r(HTTPOptions,C8,"HTTP/1\.1\x20200\x20OK\r\nServer
-SF::\x20Werkzeug/3\.1\.8\x20Python/3\.12\.14\r\nDate:\x20Fri,\x2004\x20Sep
-SF:\x202026\x2023:30:02\x20GMT\r\nContent-Type:\x20text/html;\x20charset=u
-SF:tf-8\r\nAllow:\x20HEAD,\x20OPTIONS,\x20GET\r\nContent-Length:\x200\r\nC
-SF:onnection:\x20close\r\n\r\n")%r(RTSPRequest,16C,"<!DOCTYPE\x20HTML>\n<h
-SF:tml\x20lang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\x20\x20\x20\x20\x
-SF:20\x20<meta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x20\x20\x20\x20<tit
-SF:le>Error\x20response</title>\n\x20\x20\x20\x20</head>\n\x20\x20\x20\x20
-SF:<body>\n\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20response</h1>\n\x2
-SF:0\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code:\x20400</p>\n\x20\x20\x20
-SF:\x20\x20\x20\x20\x20<p>Message:\x20Bad\x20request\x20version\x20\('RTSP
-SF:/1\.0'\)\.</p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20exp
-SF:lanation:\x20400\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\
-SF:x20method\.</p>\n\x20\x20\x20\x20</body>\n</html>\n")%r(FourOhFourReque
-SF:st,185,"HTTP/1\.1\x20404\x20NOT\x20FOUND\r\nServer:\x20Werkzeug/3\.1\.8
-SF:\x20Python/3\.12\.14\r\nDate:\x20Fri,\x2004\x20Sep\x202026\x2023:30:03\
-SF:x20GMT\r\nContent-Type:\x20text/html;\x20charset=utf-8\r\nContent-Lengt
-SF:h:\x20207\r\nConnection:\x20close\r\n\r\n<!doctype\x20html>\n<html\x20l
-SF:ang=en>\n<title>404\x20Not\x20Found</title>\n<h1>Not\x20Found</h1>\n<p>
-SF:The\x20requested\x20URL\x20was\x20not\x20found\x20on\x20the\x20server\.
-SF:\x20If\x20you\x20entered\x20the\x20URL\x20manually\x20please\x20check\x
-SF:20your\x20spelling\x20and\x20try\x20again\.</p>\n")%r(Socks5,18B,"<!DOC
-SF:TYPE\x20HTML>\n<html\x20lang=\"en\">\n\x20\x20\x20\x20<head>\n\x20\x20\
-SF:x20\x20\x20\x20\x20\x20<meta\x20charset=\"utf-8\">\n\x20\x20\x20\x20\x2
-SF:0\x20\x20\x20<title>Error\x20response</title>\n\x20\x20\x20\x20</head>\
-SF:n\x20\x20\x20\x20<body>\n\x20\x20\x20\x20\x20\x20\x20\x20<h1>Error\x20r
-SF:esponse</h1>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code:\x20400<
-SF:/p>\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Message:\x20Bad\x20request\x20s
-SF:yntax\x20\('\\x05\\x04\\x00\\x01\\x02\\x80\\x05\\x01\\x00\\x03'\)\.</p>
-SF:\n\x20\x20\x20\x20\x20\x20\x20\x20<p>Error\x20code\x20explanation:\x204
-SF:00\x20-\x20Bad\x20request\x20syntax\x20or\x20unsupported\x20method\.</p
-SF:>\n\x20\x20\x20\x20</body>\n</html>\n");
-Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+# Seed de faux drops d'implants pour que /status ne soit pas vide
+if [ ! -f /var/loot/BCN-7A01_drop.json ]; then
+  cat > /var/loot/BCN-7A01_drop.json <<'EOF'
+{"agent_id":"BCN-7A01","target":"WORKSTATION-07","ts":"2026-07-20T08:14:22Z","type":"credentials","data":{"user":"jdoe","hash":"aad3b435b51404ee:8846f7eaee8fb117ad06bdd830b7586c"}}
+EOF
+  cat > /var/loot/BCN-7A01_files.json <<'EOF'
+{"agent_id":"BCN-7A01","target":"WORKSTATION-07","ts":"2026-07-20T08:15:01Z","type":"exfil","files":["C:\\Users\\jdoe\\Documents\\budget_q3.xlsx","C:\\Users\\jdoe\\Desktop\\passwords.kdbx"]}
+EOF
+  cat > /var/loot/BCN-A2D0_checkin.json <<'EOF'
+{"agent_id":"BCN-A2D0","target":"SRV-DB01","ts":"2026-07-20T11:42:00Z","type":"checkin","note":"pivot established via dbadmin creds"}
+EOF
+  chown -R collector:collector /var/loot
+fi
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 108.00 seconds
-(UNKNOWN) [172.28.20.2] 2222 (?) open
-SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u10
+echo "[m1-loot] ready — relay :8080, SSH :22"
+exec su -s /bin/bash collector -c "cd /opt/loot-app && python3 server.py"
+===
+"""Spectre C2 — Loot collection relay."""
+from flask import Flask, request, jsonify, Response
+import os, time, hashlib, uuid
 
+app = Flask(__name__)
+LOOT_DIR = '/var/loot'
+
+LOG_ENTRIES = [
+    {'ts': '2026-07-20T06:00:01Z', 'level': 'info',  'msg': 'relay started — pid 1, user collector'},
+    {'ts': '2026-07-20T06:00:01Z', 'level': 'info',  'msg': 'drop directory: /var/loot (owner collector:collector)'},
+    {'ts': '2026-07-20T06:00:02Z', 'level': 'info',  'msg': 'listening on 0.0.0.0:8080'},
+    {'ts': '2026-07-20T08:14:23Z', 'level': 'info',  'msg': 'drop received from BCN-7A01 — 181B written to /var/loot/BCN-7A01_drop.json'},
+    {'ts': '2026-07-20T08:15:02Z', 'level': 'info',  'msg': 'drop received from BCN-7A01 — 191B written to /var/loot/BCN-7A01_files.json'},
+    {'ts': '2026-07-20T11:42:01Z', 'level': 'info',  'msg': 'drop received from BCN-A2D0 — 134B written to /var/loot/BCN-A2D0_checkin.json'},
+    {'ts': '2026-07-20T23:00:00Z', 'level': 'warn',  'msg': 'disk usage /var/loot: 12MB — rotate scheduled'},
+    {'ts': '2026-07-21T02:30:00Z', 'level': 'error', 'msg': 'failed to write /home/collector/.cache/relay/session.lock — Permission denied'},
+    {'ts': '2026-07-21T06:00:01Z', 'level': 'info',  'msg': 'relay restarted — config /home/collector/.config/spectre/relay.yml'},
+]
+
+RELAY_VERSION = '2.1.4'
+RELAY_BUILD = 'spectre-relay-2.1.4-linux-amd64'
+FRAMEWORK_VERSION = '4.7.2'
+
+STUB_AGENTS = [
+    {'id': 'BCN-7A01', 'hostname': 'WS-FINANCE-03', 'user': 'j.martinez', 'os': 'Windows 10 Pro 22H2', 'arch': 'x86_64', 'pid': 4812, 'integrity': 'medium', 'last_seen': '2026-07-21T06:12:00Z', 'sleep': 30, 'jitter': 0.2, 'status': 'active', 'transport': 'https', 'listener_id': 'LSN-01'},
+    {'id': 'BCN-A2D0', 'hostname': 'SRV-DC01', 'user': 'SYSTEM', 'os': 'Windows Server 2022', 'arch': 'x86_64', 'pid': 1088, 'integrity': 'high', 'last_seen': '2026-07-20T11:42:01Z', 'sleep': 60, 'jitter': 0.3, 'status': 'dormant', 'transport': 'dns', 'listener_id': 'LSN-02'},
+    {'id': 'BCN-F419', 'hostname': 'LT-DEVOPS-07', 'user': 'a.chen', 'os': 'Ubuntu 22.04', 'arch': 'x86_64', 'pid': 29441, 'integrity': 'medium', 'last_seen': '2026-07-19T22:30:00Z', 'sleep': 45, 'jitter': 0.15, 'status': 'lost', 'transport': 'https', 'listener_id': 'LSN-01'},
+]
+
+STUB_LISTENERS = [
+    {'id': 'LSN-01', 'name': 'https-primary', 'type': 'https', 'bind': '0.0.0.0:443', 'status': 'running', 'agents': 2, 'started': '2026-07-20T06:00:00Z'},
+    {'id': 'LSN-02', 'name': 'dns-covert', 'type': 'dns-txt', 'bind': '0.0.0.0:53', 'domain': 'ns1.cdn-analytics.net', 'status': 'running', 'agents': 1, 'started': '2026-07-20T06:00:01Z'},
+    {'id': 'LSN-03', 'name': 'smb-lateral', 'type': 'smb-pipe', 'pipe': 'spectre_svc', 'status': 'stopped', 'agents': 0, 'started': None},
+]
+
+STUB_MODULES = [
+    {'name': 'recon/portscan', 'category': 'recon', 'description': 'TCP port scanner', 'opsec': 'low'},
+    {'name': 'recon/arpscan', 'category': 'recon', 'description': 'ARP network discovery', 'opsec': 'low'},
+    {'name': 'recon/adquery', 'category': 'recon', 'description': 'LDAP domain enumeration', 'opsec': 'medium'},
+    {'name': 'creds/mimikatz', 'category': 'credentials', 'description': 'In-memory credential extraction', 'opsec': 'high'},
+    {'name': 'creds/kerberoast', 'category': 'credentials', 'description': 'SPN ticket extraction', 'opsec': 'medium'},
+    {'name': 'creds/dcsync', 'category': 'credentials', 'description': 'Domain replication attack', 'opsec': 'critical'},
+    {'name': 'creds/hashdump', 'category': 'credentials', 'description': 'SAM/NTDS hash extraction', 'opsec': 'high'},
+    {'name': 'lateral/psexec', 'category': 'lateral', 'description': 'Remote execution via SMB', 'opsec': 'high'},
+    {'name': 'lateral/wmi', 'category': 'lateral', 'description': 'WMI process creation', 'opsec': 'medium'},
+    {'name': 'lateral/winrm', 'category': 'lateral', 'description': 'PowerShell remoting', 'opsec': 'medium'},
+    {'name': 'persist/schtask', 'category': 'persistence', 'description': 'Scheduled task creation', 'opsec': 'medium'},
+    {'name': 'persist/registry', 'category': 'persistence', 'description': 'Run key persistence', 'opsec': 'low'},
+    {'name': 'persist/service', 'category': 'persistence', 'description': 'Windows service install', 'opsec': 'high'},
+    {'name': 'privesc/getsystem', 'category': 'privilege', 'description': 'Token impersonation', 'opsec': 'high'},
+    {'name': 'privesc/uac_bypass', 'category': 'privilege', 'description': 'UAC bypass via fodhelper', 'opsec': 'medium'},
+    {'name': 'exfil/clipboard', 'category': 'collection', 'description': 'Clipboard monitoring', 'opsec': 'low'},
+    {'name': 'exfil/keylog', 'category': 'collection', 'description': 'Keystroke capture', 'opsec': 'medium'},
+    {'name': 'exfil/screenshot', 'category': 'collection', 'description': 'Desktop capture', 'opsec': 'low'},
+    {'name': 'evasion/amsi_patch', 'category': 'evasion', 'description': 'AMSI memory patch', 'opsec': 'high'},
+    {'name': 'evasion/etw_blind', 'category': 'evasion', 'description': 'ETW provider disable', 'opsec': 'high'},
+]
+
+STUB_PAYLOADS = [
+    {'id': 'PLD-001', 'name': 'beacon_https_x64', 'format': 'exe', 'arch': 'x64', 'listener': 'LSN-01', 'size': 287744, 'created': '2026-07-20T05:50:00Z', 'hash': 'a1b2c3d4e5f6'},
+    {'id': 'PLD-002', 'name': 'stager_dns_x64', 'format': 'dll', 'arch': 'x64', 'listener': 'LSN-02', 'size': 45056, 'created': '2026-07-20T05:51:00Z', 'hash': 'f6e5d4c3b2a1'},
+    {'id': 'PLD-003', 'name': 'beacon_smb_x64', 'format': 'shellcode', 'arch': 'x64', 'listener': 'LSN-03', 'size': 12288, 'created': '2026-07-20T05:52:00Z', 'hash': '1a2b3c4d5e6f'},
+]
+
+STUB_CREDENTIALS = [
+    {'id': 1, 'domain': 'LYNX', 'username': 'j.martinez', 'type': 'password', 'source': 'mimikatz', 'agent': 'BCN-7A01', 'collected': '2026-07-20T08:30:00Z'},
+    {'id': 2, 'domain': 'LYNX', 'username': 'svc_backup', 'type': 'ntlm', 'source': 'hashdump', 'agent': 'BCN-A2D0', 'collected': '2026-07-20T11:45:00Z'},
+    {'id': 3, 'domain': 'LYNX', 'username': 'admin', 'type': 'kerberos_tgt', 'source': 'kerberoast', 'agent': 'BCN-A2D0', 'collected': '2026-07-20T11:50:00Z'},
+]
+
+STUB_PIVOTS = [
+    {'id': 'PVT-01', 'type': 'socks5', 'agent': 'BCN-7A01', 'bind': '127.0.0.1:1080', 'status': 'active', 'rx_bytes': 1482752, 'tx_bytes': 524288},
+    {'id': 'PVT-02', 'type': 'portfwd', 'agent': 'BCN-A2D0', 'local': '127.0.0.1:8445', 'remote': '10.10.10.5:445', 'status': 'idle'},
+]
+
+STUB_OPS = [
+    {'id': 'OP-LYNX-001', 'name': 'LYNX-VARELID Recon', 'status': 'active', 'targets': 3, 'agents': 3, 'created': '2026-07-20T05:00:00Z', 'operator': 'ghost'},
+]
+
+STUB_TARGETS = [
+    {'id': 'TGT-01', 'hostname': 'WS-FINANCE-03', 'ip': '10.10.10.101', 'os': 'Windows 10', 'domain': 'LYNX', 'status': 'compromised', 'agent': 'BCN-7A01'},
+    {'id': 'TGT-02', 'hostname': 'SRV-DC01', 'ip': '10.10.10.5', 'os': 'Windows Server 2022', 'domain': 'LYNX', 'status': 'compromised', 'agent': 'BCN-A2D0'},
+    {'id': 'TGT-03', 'hostname': 'LT-DEVOPS-07', 'ip': '10.10.10.47', 'os': 'Ubuntu 22.04', 'domain': '', 'status': 'lost', 'agent': 'BCN-F419'},
+    {'id': 'TGT-04', 'hostname': 'SRV-FILE01', 'ip': '10.10.10.20', 'os': 'Windows Server 2019', 'domain': 'LYNX', 'status': 'profiled'},
+    {'id': 'TGT-05', 'hostname': 'SRV-SQL01', 'ip': '10.10.10.30', 'os': 'Windows Server 2019', 'domain': 'LYNX', 'status': 'profiled'},
+]
+
+STUB_COMMS = [
+    {'id': 'CH-01', 'type': 'https', 'domain': 'cdn-static-res.net', 'status': 'active', 'last_rotate': '2026-07-21T00:00:00Z', 'cert_expiry': '2027-01-20'},
+    {'id': 'CH-02', 'type': 'dns', 'domain': 'ns1.cdn-analytics.net', 'status': 'active', 'last_rotate': '2026-07-20T00:00:00Z'},
+    {'id': 'CH-03', 'type': 'domain-front', 'front': 'cdn.example.com', 'actual': 'c2.lynx-varelid.var', 'status': 'standby'},
+]
+
+def _auth_required():
+    token = request.headers.get('X-Spectre-Token') or request.args.get('token')
+    if not token:
+        return jsonify({'error': 'RELAY_ERR_AUTH', 'message': 'X-Spectre-Token header required'}), 401
+    return None
+
+
+# ─── Core relay ───────────────────────────────────────────────
+
+@app.route('/')
+def index():
+    return Response(
+        '{"status":"awaiting","protocol":"spectre-relay/2.1"}\n',
+        mimetype='application/json',
+    )
+
+@app.route('/api/beacon', methods=['POST', 'GET'])
+def beacon():
+    agent_id = request.args.get('id', request.form.get('agent_id', 'unknown'))
+    return jsonify({
+        'agent': agent_id,
+        'tasks': [],
+        'sleep': 30,
+        'jitter': 0.2,
+    })
+
+@app.route('/api/drop', methods=['POST'])
+def drop():
+    filename = request.form.get('filename') or request.args.get('filename', '')
+    agent_id = request.form.get('agent_id', request.args.get('id', 'anon'))
+    hostname = request.form.get('hostname', request.args.get('hostname', ''))
+    target_user = request.form.get('user', request.args.get('user', ''))
+    target_os = request.form.get('os', request.args.get('os', ''))
+    category = request.form.get('category', request.args.get('category', 'raw'))
+
+    if not filename:
+        return jsonify({'error': 'RELAY_ERR_NO_FILENAME', 'required': ['filename'], 'optional': ['agent_id', 'hostname', 'user', 'os', 'category']}), 400
+
+    filepath = os.path.join(LOOT_DIR, filename)
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+    data = request.files.get('file')
+    if data:
+        content = data.read()
+    else:
+        content = request.get_data()
+
+    with open(filepath, 'wb') as f:
+        f.write(content)
+    os.chmod(filepath, 0o644)
+
+    resp = {
+        'status': 'received',
+        'agent': agent_id,
+        'ref': hashlib.md5(content[:64]).hexdigest()[:12],
+        'size': len(content),
+        'category': category,
+    }
+    if hostname:
+        resp['hostname'] = hostname
+    if target_user:
+        resp['user'] = target_user
+    if target_os:
+        resp['os'] = target_os
+    return jsonify(resp)
+
+@app.route('/status')
+def status():
+    count = sum(1 for _, _, fns in os.walk(LOOT_DIR) for f in fns if not f.startswith('.'))
+    return jsonify({
+        'relay': 'spectre-loot',
+        'version': RELAY_VERSION,
+        'build': RELAY_BUILD,
+        'framework': FRAMEWORK_VERSION,
+        'uptime_s': int(time.monotonic()),
+        'collected': count,
+    })
+
+@app.route('/api/logview')
+def logview():
+    return jsonify({'entries': LOG_ENTRIES})
+
+
+# ─── Agent management ────────────────────────────────────────
+
+@app.route('/api/agents')
+def agents_list():
+    return jsonify({'agents': STUB_AGENTS, 'total': len(STUB_AGENTS)})
+
+@app.route('/api/agents/<agent_id>')
+def agents_get(agent_id):
+    for a in STUB_AGENTS:
+        if a['id'] == agent_id:
+            return jsonify(a)
+    return jsonify({'error': 'RELAY_ERR_AGENT_NOT_FOUND', 'id': agent_id}), 404
+
+@app.route('/api/agents/register', methods=['POST'])
+def agents_register():
+    return jsonify({'error': 'RELAY_ERR_REGISTRATION_CLOSED', 'message': 'Agent registration disabled on relay node'}), 403
+
+@app.route('/api/agents/<agent_id>/tasks')
+def agents_tasks(agent_id):
+    return jsonify({'agent': agent_id, 'pending': [], 'completed': []})
+
+@app.route('/api/agents/<agent_id>/tasks', methods=['POST'])
+def agents_task_create(agent_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Relay node is read-only, use teamserver for tasking'}), 403
+
+@app.route('/api/agents/<agent_id>/results')
+def agents_results(agent_id):
+    return jsonify({'agent': agent_id, 'results': []})
+
+@app.route('/api/agents/<agent_id>/heartbeat', methods=['POST'])
+def agents_heartbeat(agent_id):
+    return jsonify({'agent': agent_id, 'ack': True, 'next_checkin': 30})
+
+@app.route('/api/agents/<agent_id>/kill', methods=['POST'])
+def agents_kill(agent_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Kill command requires teamserver access'}), 403
+
+@app.route('/api/agents/<agent_id>/sleep', methods=['POST'])
+def agents_sleep(agent_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Sleep modification requires teamserver access'}), 403
+
+
+# ─── Listener management ─────────────────────────────────────
+
+@app.route('/api/listeners')
+def listeners_list():
+    return jsonify({'listeners': STUB_LISTENERS, 'total': len(STUB_LISTENERS)})
+
+@app.route('/api/listeners/<listener_id>')
+def listeners_get(listener_id):
+    for l in STUB_LISTENERS:
+        if l['id'] == listener_id:
+            return jsonify(l)
+    return jsonify({'error': 'RELAY_ERR_LISTENER_NOT_FOUND'}), 404
+
+@app.route('/api/listeners', methods=['POST'])
+def listeners_create():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Listener creation requires teamserver'}), 403
+
+@app.route('/api/listeners/<listener_id>/start', methods=['POST'])
+def listeners_start(listener_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/listeners/<listener_id>/stop', methods=['POST'])
+def listeners_stop(listener_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/listeners/<listener_id>/status')
+def listeners_status(listener_id):
+    for l in STUB_LISTENERS:
+        if l['id'] == listener_id:
+            return jsonify({'id': listener_id, 'status': l['status'], 'agents': l['agents']})
+    return jsonify({'error': 'RELAY_ERR_LISTENER_NOT_FOUND'}), 404
+
+
+# ─── Payload management ──────────────────────────────────────
+
+@app.route('/api/payloads')
+def payloads_list():
+    return jsonify({'payloads': STUB_PAYLOADS, 'total': len(STUB_PAYLOADS)})
+
+@app.route('/api/payloads/<payload_id>')
+def payloads_get(payload_id):
+    for p in STUB_PAYLOADS:
+        if p['id'] == payload_id:
+            return jsonify(p)
+    return jsonify({'error': 'RELAY_ERR_PAYLOAD_NOT_FOUND'}), 404
+
+@app.route('/api/payloads/generate', methods=['POST'])
+def payloads_generate():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_BUILD_UNAVAILABLE', 'message': 'Payload generation not available on relay node'}), 501
+
+@app.route('/api/payloads/<payload_id>/download')
+def payloads_download(payload_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_STORAGE_UNAVAILABLE', 'message': 'Payload storage is on teamserver'}), 501
+
+@app.route('/api/payloads', methods=['DELETE'])
+def payloads_delete():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+
+# ─── Credential store ────────────────────────────────────────
+
+@app.route('/api/credentials')
+def credentials_list():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'credentials': STUB_CREDENTIALS, 'total': len(STUB_CREDENTIALS)})
+
+@app.route('/api/credentials', methods=['POST'])
+def credentials_add():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'status': 'queued', 'message': 'Credential will be synced to teamserver'}), 202
+
+@app.route('/api/credentials/<int:cred_id>', methods=['DELETE'])
+def credentials_delete(cred_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/credentials/search')
+def credentials_search():
+    auth = _auth_required()
+    if auth: return auth
+    q = request.args.get('q', '')
+    results = [c for c in STUB_CREDENTIALS if q.lower() in c.get('username', '').lower()]
+    return jsonify({'results': results, 'query': q})
+
+
+# ─── Module management ───────────────────────────────────────
+
+@app.route('/api/modules')
+def modules_list():
+    return jsonify({'modules': STUB_MODULES, 'total': len(STUB_MODULES)})
+
+@app.route('/api/modules/<path:module_name>')
+def modules_get(module_name):
+    for m in STUB_MODULES:
+        if m['name'] == module_name:
+            return jsonify(m)
+    return jsonify({'error': 'RELAY_ERR_MODULE_NOT_FOUND', 'name': module_name}), 404
+
+@app.route('/api/modules/load', methods=['POST'])
+def modules_load():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Module loading requires teamserver'}), 403
+
+@app.route('/api/modules/execute', methods=['POST'])
+def modules_execute():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Module execution requires teamserver'}), 403
+
+@app.route('/api/modules/results')
+def modules_results():
+    return jsonify({'results': [], 'message': 'No module execution history on relay'})
+
+
+# ─── Pivot / Tunnel management ───────────────────────────────
+
+@app.route('/api/pivots')
+def pivots_list():
+    return jsonify({'pivots': STUB_PIVOTS, 'total': len(STUB_PIVOTS)})
+
+@app.route('/api/pivots/<pivot_id>')
+def pivots_get(pivot_id):
+    for p in STUB_PIVOTS:
+        if p['id'] == pivot_id:
+            return jsonify(p)
+    return jsonify({'error': 'RELAY_ERR_PIVOT_NOT_FOUND'}), 404
+
+@app.route('/api/pivots', methods=['POST'])
+def pivots_create():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/pivots/<pivot_id>', methods=['DELETE'])
+def pivots_delete(pivot_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/pivots/<pivot_id>/status')
+def pivots_status(pivot_id):
+    for p in STUB_PIVOTS:
+        if p['id'] == pivot_id:
+            return jsonify({'id': pivot_id, 'status': p['status']})
+    return jsonify({'error': 'RELAY_ERR_PIVOT_NOT_FOUND'}), 404
+
+
+# ─── Logging ─────────────────────────────────────────────────
+
+
+# ─── Configuration ───────────────────────────────────────────
+
+@app.route('/api/config')
+def config_get():
+    return jsonify({
+        'relay': {
+            'version': RELAY_VERSION,
+            'mode': 'relay',
+            'loot_dir': LOOT_DIR,
+            'max_file_size': '50MB',
+            'compression': 'gzip',
+            'encryption': 'aes-256-gcm',
+        },
+        'teamserver': {
+            'host': 'ts.lynx-varelid.var',
+            'port': 50050,
+            'status': 'disconnected',
+        },
+        'c2_profiles': ['default', 'cdn-mimic', 'dns-low-slow'],
+    })
+
+@app.route('/api/config', methods=['PUT'])
+def config_update():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Configuration changes require teamserver'}), 403
+
+@app.route('/api/config/reset', methods=['POST'])
+def config_reset():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/config/profiles')
+def config_profiles():
+    return jsonify({'profiles': [
+        {'name': 'default', 'sleep': 30, 'jitter': 0.2, 'transport': 'https', 'useragent': 'Mozilla/5.0'},
+        {'name': 'cdn-mimic', 'sleep': 10, 'jitter': 0.1, 'transport': 'https', 'useragent': 'CDN-Pull/2.0', 'headers': {'X-CDN-Token': 'dynamic'}},
+        {'name': 'dns-low-slow', 'sleep': 300, 'jitter': 0.5, 'transport': 'dns-txt', 'max_data': 189},
+    ]})
+
+
+# ─── Network recon ───────────────────────────────────────────
+
+@app.route('/api/network/hosts')
+def network_hosts():
+    return jsonify({'hosts': [
+        {'ip': '10.10.10.5', 'hostname': 'SRV-DC01', 'os': 'Windows Server 2022', 'ports': [53, 88, 135, 389, 445, 636]},
+        {'ip': '10.10.10.20', 'hostname': 'SRV-FILE01', 'os': 'Windows Server 2019', 'ports': [135, 445, 3389]},
+        {'ip': '10.10.10.30', 'hostname': 'SRV-SQL01', 'os': 'Windows Server 2019', 'ports': [135, 445, 1433, 3389]},
+        {'ip': '10.10.10.47', 'hostname': 'LT-DEVOPS-07', 'os': 'Ubuntu 22.04', 'ports': [22, 80, 8080]},
+        {'ip': '10.10.10.101', 'hostname': 'WS-FINANCE-03', 'os': 'Windows 10', 'ports': [135, 445]},
+    ]})
+
+@app.route('/api/network/scan', methods=['POST'])
+def network_scan():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Active scanning requires teamserver'}), 403
+
+@app.route('/api/network/ports')
+def network_ports():
+    return jsonify({'common_ports': [22, 53, 80, 88, 135, 389, 443, 445, 636, 1433, 3306, 3389, 5985, 8080, 8443]})
+
+@app.route('/api/network/services')
+def network_services():
+    return jsonify({'services': [
+        {'port': 88, 'service': 'kerberos', 'host': '10.10.10.5'},
+        {'port': 389, 'service': 'ldap', 'host': '10.10.10.5'},
+        {'port': 445, 'service': 'smb', 'hosts': ['10.10.10.5', '10.10.10.20', '10.10.10.30', '10.10.10.101']},
+        {'port': 1433, 'service': 'mssql', 'host': '10.10.10.30'},
+    ]})
+
+@app.route('/api/network/interfaces')
+def network_interfaces():
+    return jsonify({'interfaces': [
+        {'name': 'eth0', 'ip': '10.10.10.10', 'netmask': '255.255.255.0', 'gateway': '10.10.10.1'},
+    ]})
+
+
+# ─── Persistence ─────────────────────────────────────────────
+
+@app.route('/api/persistence')
+def persistence_list():
+    return jsonify({'mechanisms': [
+        {'id': 'PST-01', 'type': 'scheduled_task', 'agent': 'BCN-7A01', 'name': 'WindowsUpdateCheck', 'status': 'active', 'interval': '1h'},
+        {'id': 'PST-02', 'type': 'registry_run', 'agent': 'BCN-A2D0', 'key': 'HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\SvcHost', 'status': 'active'},
+    ]})
+
+@app.route('/api/persistence/deploy', methods=['POST'])
+def persistence_deploy():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/persistence/<persist_id>/remove', methods=['POST'])
+def persistence_remove(persist_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/persistence/<persist_id>/status')
+def persistence_status(persist_id):
+    return jsonify({'id': persist_id, 'status': 'unknown', 'message': 'Status check requires agent callback'})
+
+
+# ─── Exfiltration ────────────────────────────────────────────
+
+@app.route('/api/exfil/queue')
+def exfil_queue():
+    return jsonify({'queue': [], 'pending': 0, 'completed': 3})
+
+@app.route('/api/exfil/status')
+def exfil_status():
+    return jsonify({
+        'total_bytes': 12582912,
+        'files_collected': 3,
+        'last_drop': '2026-07-20T11:42:01Z',
+        'storage_used': '12MB',
+        'storage_limit': '500MB',
+    })
+
+@app.route('/api/exfil/download/<ref>')
+def exfil_download(ref):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_NOT_IMPLEMENTED', 'message': 'Use /api/drop for file retrieval'}), 501
+
+@app.route('/api/exfil/purge', methods=['POST'])
+def exfil_purge():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+
+# ─── Communications ──────────────────────────────────────────
+
+@app.route('/api/comms')
+def comms_list():
+    return jsonify({'channels': STUB_COMMS, 'total': len(STUB_COMMS)})
+
+@app.route('/api/comms/<channel_id>')
+def comms_get(channel_id):
+    for c in STUB_COMMS:
+        if c['id'] == channel_id:
+            return jsonify(c)
+    return jsonify({'error': 'RELAY_ERR_CHANNEL_NOT_FOUND'}), 404
+
+@app.route('/api/comms', methods=['POST'])
+def comms_create():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/comms/rotate', methods=['POST'])
+def comms_rotate():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY', 'message': 'Channel rotation requires teamserver'}), 403
+
+@app.route('/api/comms/health')
+def comms_health():
+    return jsonify({'channels': [
+        {'id': c['id'], 'type': c['type'], 'latency_ms': 45 if c['status'] == 'active' else None, 'status': c['status']}
+        for c in STUB_COMMS
+    ]})
+
+
+# ─── Operations / Campaigns ──────────────────────────────────
+
+@app.route('/api/ops')
+def ops_list():
+    return jsonify({'operations': STUB_OPS, 'total': len(STUB_OPS)})
+
+@app.route('/api/ops/<op_id>')
+def ops_get(op_id):
+    for o in STUB_OPS:
+        if o['id'] == op_id:
+            return jsonify(o)
+    return jsonify({'error': 'RELAY_ERR_OP_NOT_FOUND'}), 404
+
+@app.route('/api/ops', methods=['POST'])
+def ops_create():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/ops/<op_id>', methods=['PUT'])
+def ops_update(op_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/ops/<op_id>/archive', methods=['POST'])
+def ops_archive(op_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/ops/<op_id>/timeline')
+def ops_timeline(op_id):
+    return jsonify({'operation': op_id, 'events': [
+        {'ts': '2026-07-20T05:00:00Z', 'type': 'op_created', 'detail': 'Operation LYNX-VARELID Recon created'},
+        {'ts': '2026-07-20T06:00:00Z', 'type': 'listener_started', 'detail': 'LSN-01 https-primary started'},
+        {'ts': '2026-07-20T06:00:01Z', 'type': 'listener_started', 'detail': 'LSN-02 dns-covert started'},
+        {'ts': '2026-07-20T08:14:23Z', 'type': 'agent_checkin', 'detail': 'BCN-7A01 initial callback'},
+        {'ts': '2026-07-20T11:42:01Z', 'type': 'agent_checkin', 'detail': 'BCN-A2D0 initial callback'},
+    ]})
+
+
+# ─── Target management ───────────────────────────────────────
+
+@app.route('/api/targets')
+def targets_list():
+    return jsonify({'targets': STUB_TARGETS, 'total': len(STUB_TARGETS)})
+
+@app.route('/api/targets/<target_id>')
+def targets_get(target_id):
+    for t in STUB_TARGETS:
+        if t['id'] == target_id:
+            return jsonify(t)
+    return jsonify({'error': 'RELAY_ERR_TARGET_NOT_FOUND'}), 404
+
+@app.route('/api/targets', methods=['POST'])
+def targets_add():
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/targets/<target_id>', methods=['DELETE'])
+def targets_remove(target_id):
+    auth = _auth_required()
+    if auth: return auth
+    return jsonify({'error': 'RELAY_ERR_READONLY'}), 403
+
+@app.route('/api/targets/<target_id>/profile')
+def targets_profile(target_id):
+    for t in STUB_TARGETS:
+        if t['id'] == target_id:
+            return jsonify({
+                'target': t,
+                'services': [],
+                'shares': [],
+                'users': [],
+                'message': 'Full profile requires active recon module',
+            })
+    return jsonify({'error': 'RELAY_ERR_TARGET_NOT_FOUND'}), 404
+
+
+# ─── API metadata ────────────────────────────────────────────
+
+@app.route('/api')
+def api_index():
+    return jsonify({
+        'framework': 'spectre',
+        'version': FRAMEWORK_VERSION,
+        'relay_version': RELAY_VERSION,
+        'mode': 'relay',
+    })
+
+@app.route('/api/version')
+def api_version():
+    return jsonify({
+        'framework': 'spectre',
+        'framework_version': FRAMEWORK_VERSION,
+        'relay_version': RELAY_VERSION,
+        'build': RELAY_BUILD,
+        'python': '3.12',
+        'api_level': 3,
+    })
+
+@app.route('/api/health')
+def api_health():
+    return jsonify({
+        'status': 'operational',
+        'relay': 'ok',
+        'storage': 'ok',
+        'teamserver': 'disconnected',
+        'uptime_s': int(time.monotonic()),
+    })
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+===
+#!/usr/bin/env python3
+import json, subprocess, sys
+
+CONFIG = '/opt/loot-processor/.mcp.json'
+
+try:
+    with open(CONFIG) as f:
+        config = json.load(f)
+    for name, srv in config.get('mcpServers', {}).items():
+        cmd = [srv['command']] + srv.get('args', [])
+        print(f'[processor] starting {name}: {" ".join(cmd)}')
+        subprocess.run(cmd, timeout=30, capture_output=True)
+except Exception as e:
+    print(f'[processor] error: {e}', file=sys.stderr)
+===
+#!/usr/bin/env python3
+import os, json
+
+LOOT_DIR = '/var/loot'
+index = []
+for root, _dirs, files in os.walk(LOOT_DIR):
+    for f in files:
+        if f.startswith('.'):
+            continue
+        fp = os.path.join(root, f)
+        index.append({
+            'file': os.path.relpath(fp, LOOT_DIR),
+            'size': os.path.getsize(fp),
+        })
+
+with open(os.path.join(LOOT_DIR, '.index.json'), 'w') as out:
+    json.dump(index, out, indent=2)
+print(f'[indexer] indexed {len(index)} files')
+===
+{
+  "mcpServers": {
+    "loot-indexer": {
+      "command": "python3",
+      "args": ["/opt/loot-processor/indexer.py"]
+    }
+  }
+}
+===
+flask==3.1.*
+gunicorn==23.*
+collector@loot:~$ 
